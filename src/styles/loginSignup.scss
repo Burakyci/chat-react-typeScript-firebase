@@ -1,0 +1,28 @@
+$myColor: red;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15%;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 10px 10px 10px gray;
+
+    input {
+      margin: 10px;
+    }
+    button {
+      background-color: grey;
+    }
+    p {
+      color: blue;
+      cursor: pointer;
+    }
+  }
+}
