@@ -14,16 +14,12 @@ import { getUserList } from "./state/slices/userSlice";
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
   const { initUser } = useSelector((state: RootState) => state.authSlice);
-  const { userList } = useSelector((state: RootState) => state.userSlice);
   useEffect(() => {
     const subscription = fireAuth.onAuthStateChanged((user) => {
       if (user) {
         dispatch(authInit({ user }));
       }
-      (async () => {
-        dispatch(getUserList());
-        console.log(userList);
-      })();
+      dispatch(getUserList());
     });
   }, []);
 

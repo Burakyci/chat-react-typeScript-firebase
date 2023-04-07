@@ -4,6 +4,7 @@ import { appLogout } from "../state/slices/authSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import UserList from "../components/UserList";
+import SendMessage from "../components/SendMessage";
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +17,7 @@ const Home: React.FC = () => {
       Home
       <UserList />
       <button onClick={logout}>Logout</button>
+      <SendMessage />
     </div>
   );
 };

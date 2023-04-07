@@ -1,4 +1,4 @@
-import { IUserData } from "../types/IInitialUserType";
+import { IUserData } from "../types/IInitialStateType";
 
 export class UserModel implements IUserData {
   id = "";

@@ -2,20 +2,31 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
-import { IUserData } from "../types/IInitialUserType";
+import { IUserData } from "../types/IInitialStateType";
 
 const UserList: React.FC = () => {
-  const { userList } = useSelector((state: RootState) => state.userSlice);
+  const { initUser } = useSelector((state: RootState) => state.authSlice);
 
+  const { userList } = useSelector((state: RootState) => state.userSlice);
+  const activeUser = initUser.user.uid;
   return (
     <div>
-      {userList.user?.data?.map((value: IUserData) => (
-        <div>
+      <hr />
+      {userList.user?.data?.map((value: IUserData, index) => (
+        <div key={index}>
           <p>
             Name : {value.firstName}
             {value.lastName}
           </p>
-          <p> id:{value.id}</p>
+          <div>
+            {" "}
+            {value.id === activeUser ? (
+              <p style={{ color: "green" }}> id:{value.id} </p>
+            ) : (
+              <p> id:{value.id}</p>
+            )}
+          </div>
+          <hr />
         </div>
       ))}
     </div>

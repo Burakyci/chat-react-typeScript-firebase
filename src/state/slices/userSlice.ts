@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import UserService from "../../services/userService";
 import { fireAuth } from "../../config/FirebaseConfig";
-import { IInitialUserType } from "../../types/IInitialUserType";
+import { IInitialUserType } from "../../types/IInitialStateType";
 
 export const getUserList = createAsyncThunk(
   "user/userList",
