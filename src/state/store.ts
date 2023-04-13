@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/authSlice";
 import userSlice from "./slices/userSlice";
+import chatSlice from "./slices/chatSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
-  reducer: { authSlice, userSlice },
+  reducer: { authSlice, userSlice, chatSlice },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

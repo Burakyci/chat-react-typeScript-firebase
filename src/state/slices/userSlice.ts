@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import UserService from "../../services/userService";
-import { fireAuth } from "../../config/FirebaseConfig";
-import { IInitialUserType } from "../../types/IInitialStateType";
+import { IInitialUserType } from "../../types";
 
 export const getUserList = createAsyncThunk(
   "user/userList",
@@ -17,9 +16,9 @@ export const getUserList = createAsyncThunk(
 
 const initialState: IInitialUserType = {
   userList: {
-    user: null,
+    data: null,
     loading: true,
-    error: null,
+    error: undefined,
   },
 };
 
@@ -31,16 +30,15 @@ export const userSlice = createSlice({
     builder
       .addCase(getUserList.pending, (state) => {
         state.userList.loading = true;
-        state.userList.error = null;
       })
       .addCase(getUserList.fulfilled, (state, action) => {
         state.userList.loading = false;
-        state.userList.error = null;
-        state.userList.user = action.payload;
+        state.userList.error = undefined;
+        state.userList.data = action.payload;
       })
       .addCase(getUserList.rejected, (state, action) => {
         state.userList.loading = false;
-        state.userList.error = action.payload as any;
+        state.userList.error = action.payload as string;
       });
   },
 });

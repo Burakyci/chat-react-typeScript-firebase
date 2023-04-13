@@ -1,19 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IInitialStateAuthType } from "../../types/IInitialStateType";
+import { IInitialStateAuthType } from "../../types";
 import AuthService from "../../services/authService";
 import userService from "../../services/userService";
-import {
-  IUserLoginType,
-  IUserSignupType,
-} from "../../types/IUserLoginSignupType";
-
+import { IUserLoginType, IUserSignupType } from "../../types/";
 import { fireAuth } from "../../config/FirebaseConfig";
 
 const initialState: IInitialStateAuthType = {
-  initUser: {
-    user: null,
-    loading: true,
-  },
+  user: null,
   login: {
     loading: false,
     error: null,
@@ -32,8 +25,14 @@ export const appLogin = createAsyncThunk(
         values.email,
         values.password
       );
-    } catch (error) {
-      return thunkApi.rejectWithValue(error as string);
+
+      if (!loginResult.success || !loginResult.data)
+        return thunkApi.rejectWithValue(loginResult.message);
+      const activeUserId = fireAuth.currentUser?.uid;
+      if (!activeUserId) return;
+      await userService.isItOnline(activeUserId, true);
+    } catch (error: any) {
+      return thunkApi.rejectWithValue(error.message);
     }
   }
 );
@@ -50,6 +49,9 @@ export const appSignup = createAsyncThunk(
         values.lastName,
         fireAuth.currentUser?.uid
       );
+      const activeUserId = fireAuth.currentUser?.uid;
+      if (!activeUserId) return;
+      await userService.isItOnline(activeUserId, true);
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -59,6 +61,9 @@ export const appLogout = createAsyncThunk(
   "auth/appLogout",
   async (_, { rejectWithValue }) => {
     try {
+      const activeUserId = fireAuth.currentUser?.uid;
+      if (!activeUserId) return;
+      await userService.isItOnline(activeUserId, false);
       await AuthService.logout();
     } catch (error) {
       return rejectWithValue(error);
@@ -70,12 +75,8 @@ export const authSlice = createSlice({
   name: "authSlice",
   initialState,
   reducers: {
-    authInit: (state, action: { payload: { user: any } }) => {
-      const { user } = action.payload;
-      state.initUser = {
-        user,
-        loading: !state.initUser.loading,
-      };
+    authInit: (state, action) => {
+      state.user = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -87,14 +88,14 @@ export const authSlice = createSlice({
       .addCase(appLogin.fulfilled, (state, action) => {
         state.login.loading = false;
         state.login.error = null;
-        state.initUser.user = action.payload;
+        state.user = action.payload;
       })
       .addCase(appLogin.rejected, (state, action) => {
         state.login.loading = false;
         state.login.error = action.payload;
       });
     builder.addCase(appLogout.fulfilled, (state) => {
-      state.initUser.user = null;
+      state.user = null;
     });
     builder
       .addCase(appSignup.pending, (state) => {
@@ -104,7 +105,7 @@ export const authSlice = createSlice({
       .addCase(appSignup.fulfilled, (state, action) => {
         state.signup.loading = false;
         state.signup.error = null;
-        state.initUser.user = action.payload;
+        state.user = action.payload;
       })
       .addCase(appSignup.rejected, (state, action) => {
         state.signup.loading = false;

@@ -48,7 +48,7 @@ class AuthService {
     }
   };
 
-  logout = async (): Promise<IOperationResult<[]>> => {
+  logout = async (): Promise<IOperationResult<undefined>> => {
     try {
       await signOut(fireAuth);
       return new OperationResult({

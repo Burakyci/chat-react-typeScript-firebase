@@ -1,26 +1,24 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../state/store";
+import { useAppDispatch, RootState } from "../state/store";
 import { useFormik } from "formik";
 import { appLogin, appSignup } from "../state/slices/authSlice";
 import "../styles/loginSignup.scss";
+import { useSelector } from "react-redux";
 
 const LoginAndSignup = () => {
+  const [mode, setMode] = useState(true);
   const dispatch = useAppDispatch();
-  const [mod, setmod] = useState(true);
-  const login = useFormik({
+  const { login, signup } = useSelector((state: RootState) => state.authSlice);
+  const formikLogin = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
+      email: "deneme@deneme.com",
+      password: "123123",
     },
     onSubmit: async (values) => {
-      const { email, password } = values;
-
-      dispatch(appLogin({ email, password }));
+      dispatch(appLogin(values));
     },
   });
-  const signup = useFormik({
+  const formikSignup = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
@@ -29,78 +27,93 @@ const LoginAndSignup = () => {
     },
     onSubmit: async (values) => {
       const { email, password, firstName, lastName } = values;
-      alert(JSON.stringify({ firstName, lastName }, null, 2));
       dispatch(appSignup({ email, password, firstName, lastName }));
     },
   });
+  React.useEffect(() => {
+    const { loading, error } = login;
+    if (loading === false && error !== null) {
+      alert(error);
+    }
+  }, [login]);
+  React.useEffect(() => {
+    const { loading, error } = signup;
+    if (loading === false && error !== null) {
+      alert(error);
+    }
+  }, [signup]);
 
   return (
     <div className="container">
-      {mod ? (
-        <form onSubmit={login.handleSubmit}>
+      {mode ? (
+        <form onSubmit={formikLogin.handleSubmit}>
           <input
             id="email"
             placeholder="E-Mail"
             name="email"
             type="email"
-            onChange={login.handleChange}
-            value={login.values.email}
+            onChange={formikLogin.handleChange}
+            value={formikLogin.values.email}
           />
           <input
             id="password"
             placeholder="Password"
             name="password"
             type="password"
-            onChange={login.handleChange}
-            value={login.values.password}
+            onChange={formikLogin.handleChange}
+            value={formikLogin.values.password}
           />
-          <button type="submit">Login</button>
+          <button disabled={login.loading} type="submit">
+            {login.loading ? "Loading..." : "Login"}
+          </button>{" "}
           <p
             onClick={() => {
-              setmod(!mod);
+              setMode(!mode);
             }}
           >
             Singn up for click
           </p>
         </form>
       ) : (
-        <form onSubmit={signup.handleSubmit}>
+        <form onSubmit={formikSignup.handleSubmit}>
           <input
             placeholder="first Name"
             id="firstName"
             name="firstName"
             type="text"
-            onChange={signup.handleChange}
-            value={signup.values.firstName}
+            onChange={formikSignup.handleChange}
+            value={formikSignup.values.firstName}
           />
           <input
             placeholder="Last Name"
             id="lastName"
             name="lastName"
             type="text"
-            onChange={signup.handleChange}
-            value={signup.values.lastName}
+            onChange={formikSignup.handleChange}
+            value={formikSignup.values.lastName}
           />
           <input
             placeholder="E-Mail"
             id="email"
             name="email"
             type="email"
-            onChange={signup.handleChange}
-            value={signup.values.email}
+            onChange={formikSignup.handleChange}
+            value={formikSignup.values.email}
           />
           <input
             placeholder="Password"
             id="password"
             name="password"
             type="password"
-            onChange={signup.handleChange}
-            value={signup.values.password}
+            onChange={formikSignup.handleChange}
+            value={formikSignup.values.password}
           />
-          <button type="submit">Signup</button>
+          <button disabled={signup.loading} type="submit">
+            {signup.loading ? "Loading..." : "Signup"}
+          </button>{" "}
           <p
             onClick={() => {
-              setmod(!mod);
+              setMode(!mode);
             }}
           >
             Login for click
