@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../state/store";
 import { sendMessage } from "../../state/slices/chatSlice";
+import "../../styles/sendMessage.scss";
 
 const SendMessage: React.FC = () => {
   const dispatch = useAppDispatch();

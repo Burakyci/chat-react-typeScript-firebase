@@ -16,11 +16,13 @@ const RoomList: React.FC = () => {
         <p>Loading..</p>
       ) : (
         <div>
-          {userGetId.roomIds?.data.roomId.map((roomId: string, key: number) => (
-            <p onClick={() => getRoomData(roomId)} key={key}>
-              {roomId}
-            </p>
-          ))}
+          {userGetId.roomIds?.data?.roomId?.map(
+            (roomId: string, key: number) => (
+              <p onClick={() => getRoomData(roomId)} key={key}>
+                {roomId}
+              </p>
+            )
+          )}
         </div>
       )}
     </div>

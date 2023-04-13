@@ -1,0 +1,18 @@
+.messageList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  align-self: center;
+
+  background-color: rgba(128, 128, 128, 0.317);
+  .messages {
+    width: 100%;
+    height: 300px;
+    overflow-y: auto;
+    background-color: rgba(128, 128, 128, 0.276);
+  }
+  .messages::-webkit-scrollbar {
+    display: none;
+  }
+}
