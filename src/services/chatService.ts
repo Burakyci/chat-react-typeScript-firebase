@@ -7,8 +7,11 @@ import {
   addDoc,
   updateDoc,
   getDoc,
+  query,
+  where,
+  onSnapshot,
 } from "firebase/firestore";
-import { ChatModel, IChatModel } from "../models/chatModel";
+import { ChatModel, IChatModel, RoomModel } from "../models/chatModel";
 import { IChatRoomData } from "../types";
 
 class ChatService {
@@ -124,7 +127,7 @@ class ChatService {
       });
     }
   };
-  getRoomIds = async (userId: string): Promise<OperationResult<any>> => {
+  getRoomIds = async (userId: string): Promise<OperationResult<string[]>> => {
     try {
       const userDocRef = doc(db, "users", userId);
       const userDocSnap = await getDoc(userDocRef);
@@ -149,6 +152,16 @@ class ChatService {
         message: error.message,
       });
     }
+  };
+  getChatRoomSub = (userId: string, cb: (rooms: IChatRoomData[]) => void) => {
+    const q = query(this.chatsColRef, where("userId", "==", userId));
+    const subs = onSnapshot(q, (qss) => {
+      const data = qss.docs.map((d) => {
+        return new RoomModel(d.id, d.data() as IChatRoomData);
+      });
+      cb(data);
+    });
+    return subs;
   };
 }
 export default new ChatService();

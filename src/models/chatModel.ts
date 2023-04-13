@@ -1,3 +1,6 @@
+import { string } from "yup";
+import { IChatRoomData } from "../types";
+
 export interface IChatModel {
   date?: any;
   message?: string;
@@ -23,5 +26,16 @@ export class ChatModel implements IChatModel {
       fromUser: this.fromUser,
       read: this.read,
     };
+  }
+}
+export class RoomModel implements IChatRoomData {
+  chatId = "";
+  members = [];
+  messages = [];
+  constructor(id: string, data?: IChatRoomData) {
+    this.chatId = id;
+    if (data) {
+      Object.assign(this, { ...data });
+    }
   }
 }

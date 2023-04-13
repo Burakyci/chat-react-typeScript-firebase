@@ -82,7 +82,11 @@ export const getRoomIds = createAsyncThunk(
 export const chatSlice = createSlice({
   name: "chatSlice",
   initialState,
-  reducers: {},
+  reducers: {
+    updateRoomsData: (state, action) => {
+      state.roomsData = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createRoom.pending, (state) => {
@@ -139,5 +143,5 @@ export const chatSlice = createSlice({
   },
 });
 
+export const { updateRoomsData } = chatSlice.actions;
 export default chatSlice.reducer;
-// export const {} = chatSlice.actions;
