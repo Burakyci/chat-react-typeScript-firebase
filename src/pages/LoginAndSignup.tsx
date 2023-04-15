@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-import { useAppDispatch, RootState } from "../state/store";
+import "../styles/loginSignup.scss";
 import { useFormik } from "formik";
+import { loginSchema, signupSchema } from "../helpers/validation";
 import toast, { Toaster } from "react-hot-toast";
 import { appLogin, appSignup } from "../state/slices/authSlice";
-import "../styles/loginSignup.scss";
+import { useAppDispatch, RootState } from "../state/store";
 import { useSelector } from "react-redux";
-import { loginSchema, signupSchema } from "../helpers/validation";
+import { ChildProcess } from "child_process";
 const LoginAndSignup = () => {
   const [mode, setMode] = useState(true);
   const dispatch = useAppDispatch();
-  const { login, signup } = useSelector((state: RootState) => state.authSlice);
+  const { login, signup, user } = useSelector(
+    (state: RootState) => state.authSlice
+  );
+
   const formikLogin = useFormik({
     initialValues: {
       email: "deneme@deneme.com",
@@ -17,11 +21,11 @@ const LoginAndSignup = () => {
     },
 
     onSubmit: async (values) => {
-      toast("kanka hbb");
-      dispatch(appLogin(values));
+      await dispatch(appLogin(values));
     },
     validationSchema: loginSchema,
   });
+
   const formikSignup = useFormik({
     initialValues: {
       firstName: "",
@@ -31,24 +35,22 @@ const LoginAndSignup = () => {
     },
 
     onSubmit: async (values) => {
-      toast("hayirli olsun kankk");
       const { email, password, firstName, lastName } = values;
       dispatch(appSignup({ email, password, firstName, lastName }));
     },
     validationSchema: signupSchema,
   });
-  console.log(formikSignup.errors);
-  console.log(formikLogin.errors);
+
   React.useEffect(() => {
     const { loading, error } = login;
     if (loading === false && error !== null) {
-      alert(error);
+      toast.error("hatali giris yaptin hadiii");
     }
   }, [login]);
   React.useEffect(() => {
     const { loading, error } = signup;
     if (loading === false && error !== null) {
-      alert(error);
+      toast.error("birseyleri yanlis gitti opss..");
     }
   }, [signup]);
 
@@ -65,6 +67,9 @@ const LoginAndSignup = () => {
             onChange={formikLogin.handleChange}
             value={formikLogin.values.email}
           />
+          {formikLogin.touched.email && formikLogin.errors.email ? (
+            <div style={{ color: "red" }}>{formikLogin.errors.email}</div>
+          ) : null}
           <input
             id="password"
             placeholder="Password"
@@ -73,6 +78,9 @@ const LoginAndSignup = () => {
             onChange={formikLogin.handleChange}
             value={formikLogin.values.password}
           />
+          {formikLogin.touched.password && formikLogin.errors.password ? (
+            <div style={{ color: "red" }}>{formikLogin.errors.password}</div>
+          ) : null}
           <button disabled={login.loading} type="submit">
             {login.loading ? "Loading..." : "Login"}
           </button>{" "}
@@ -94,6 +102,9 @@ const LoginAndSignup = () => {
             onChange={formikSignup.handleChange}
             value={formikSignup.values.firstName}
           />
+          {formikSignup.touched.firstName && formikSignup.errors.firstName ? (
+            <div style={{ color: "red" }}>{formikSignup.errors.firstName}</div>
+          ) : null}
           <input
             placeholder="Last Name"
             id="lastName"
@@ -102,6 +113,9 @@ const LoginAndSignup = () => {
             onChange={formikSignup.handleChange}
             value={formikSignup.values.lastName}
           />
+          {formikSignup.touched.lastName && formikSignup.errors.lastName ? (
+            <div style={{ color: "red" }}>{formikSignup.errors.lastName}</div>
+          ) : null}
           <input
             placeholder="E-Mail"
             id="email"
@@ -110,6 +124,9 @@ const LoginAndSignup = () => {
             onChange={formikSignup.handleChange}
             value={formikSignup.values.email}
           />
+          {formikSignup.touched.email && formikSignup.errors.email ? (
+            <div style={{ color: "red" }}>{formikSignup.errors.email}</div>
+          ) : null}
           <input
             placeholder="Password"
             id="password"
@@ -118,6 +135,9 @@ const LoginAndSignup = () => {
             onChange={formikSignup.handleChange}
             value={formikSignup.values.password}
           />
+          {formikSignup.touched.password && formikSignup.errors.password ? (
+            <div style={{ color: "red" }}>{formikSignup.errors.lastName}</div>
+          ) : null}
           <button disabled={signup.loading} type="submit">
             {signup.loading ? "Loading..." : "Signup"}
           </button>{" "}

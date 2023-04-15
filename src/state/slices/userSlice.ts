@@ -25,7 +25,11 @@ const initialState: IInitialUserType = {
 export const userSlice = createSlice({
   name: "userSlice",
   initialState,
-  reducers: {},
+  reducers: {
+    updateUser: (state, action) => {
+      state.userList.data = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getUserList.pending, (state) => {
@@ -43,6 +47,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const {} = userSlice.actions;
+export const { updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

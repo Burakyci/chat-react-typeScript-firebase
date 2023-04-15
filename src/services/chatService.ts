@@ -132,7 +132,6 @@ class ChatService {
       const userDocRef = doc(db, "users", userId);
       const userDocSnap = await getDoc(userDocRef);
       if (!userDocSnap.exists()) {
-        console.log(1);
         return new OperationResult({
           success: true,
           message: "room yok",

@@ -5,10 +5,14 @@ import {
   getDocs,
   updateDoc,
   getDoc,
+  onSnapshot,
+  Unsubscribe,
 } from "firebase/firestore";
 import { UserModel } from "../models/userModel";
-import { db } from "../config/FirebaseConfig";
+import { db, messaging } from "../config/FirebaseConfig";
 import { OperationResult } from "../models/commonModel";
+import { IChatModel } from "../models/chatModel";
+import { IUserData } from "../types";
 
 class UserService {
   private usersColRef = collection(db, "users");
@@ -55,6 +59,7 @@ class UserService {
       return new OperationResult({ success: false, message: error.message });
     }
   };
+
   isItOnline = async (
     userId: string,
     online: boolean
@@ -72,6 +77,47 @@ class UserService {
       return new OperationResult({ success: false, message: error.message });
     }
   };
+  getUserSub = (update: (users: UserModel) => void): any => {
+    try {
+      let users: UserModel[] = [];
+      const unSub: Unsubscribe = onSnapshot(
+        this.usersColRef,
+        (querySnapShot) => {
+          if (querySnapShot.empty) {
+            return new OperationResult({
+              success: false,
+              message: "we dont have user",
+            });
+          }
+          querySnapShot.forEach((doc) => {
+            const user = new UserModel({
+              id: doc.id,
+              firstName: doc.data().firstName,
+              lastName: doc.data().lastName,
+              online: doc.data().online,
+            }) as UserModel;
+            users.push(user);
+            update(user);
+          });
+          return unSub;
+        }
+      );
+    } catch (error: any) {
+      return new OperationResult({ success: false, message: error.message });
+    }
+  };
 }
 
 export default new UserService();
+
+// const a: IUserData[] = [];
+// const docRef = doc(this.usersColRef, `${userId}`);
+// console.log(a);
+// const unsub = onSnapshot(docRef, (doc) => {
+//   const data = doc.data();
+//   if (data) {
+//     const userData = Object.assign({}, data) as IUserData;
+//     a.push(userData);
+//   }
+// });
+// const querySnapShot = await getDocs(this.usersColRef);
