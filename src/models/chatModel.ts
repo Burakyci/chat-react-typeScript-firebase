@@ -1,29 +1,25 @@
-import { string } from "yup";
 import { IChatRoomData } from "../types";
 
-export interface IChatModel {
+export interface IMessageModel {
   date?: any;
   message?: string;
-  toUserId: string | undefined;
-  fromUser: string;
+  fromUserId: string | undefined;
   read: boolean;
 }
 
-export class ChatModel implements IChatModel {
+export class MessageModel implements IMessageModel {
   date? = Date.now();
   message = "";
-  toUserId = "";
-  fromUser = "";
+  fromUserId = "";
   read = false;
-  constructor(params?: IChatModel) {
+  constructor(params?: IMessageModel) {
     Object.assign(this, params);
   }
-  toJSON(): IChatModel {
+  toJSON(): IMessageModel {
     return {
       date: this.date,
       message: this.message,
-      toUserId: this.toUserId,
-      fromUser: this.fromUser,
+      fromUserId: this.fromUserId,
       read: this.read,
     };
   }

@@ -4,6 +4,7 @@ import AuthService from "../../services/authService";
 import userService from "../../services/userService";
 import { IUserLoginType, IUserSignupType } from "../../types/";
 import { fireAuth } from "../../config/FirebaseConfig";
+import authService from "../../services/authService";
 
 const initialState: IInitialStateAuthType = {
   user: null,
@@ -20,53 +21,49 @@ const initialState: IInitialStateAuthType = {
 export const appLogin = createAsyncThunk(
   "auth/appLogin",
   async (values: IUserLoginType, thunkApi) => {
-    try {
-      const loginResult = await AuthService.login(
-        values.email,
-        values.password
-      );
-
-      if (!loginResult.success || !loginResult.data)
-        return thunkApi.rejectWithValue(loginResult.message);
-      const activeUserId = fireAuth.currentUser?.uid;
-      if (!activeUserId) return;
-      await userService.isItOnline(activeUserId, true);
-    } catch (error: any) {
-      return thunkApi.rejectWithValue(error.message);
-    }
+    const loginResult = await AuthService.login(values.email, values.password);
+    if (!loginResult.success || !loginResult.data)
+      return thunkApi.rejectWithValue(loginResult.message);
+    const activeUserId = fireAuth.currentUser?.uid;
+    if (!activeUserId) return;
+    await userService.isItOnline(activeUserId, true);
   }
 );
 export const appSignup = createAsyncThunk(
   "auth/appSignup",
   async (values: IUserSignupType, thunkApi) => {
-    try {
-      const signupResult = await AuthService.signup(
-        values.email,
-        values.password
-      );
-      const user = await userService.initialUser(
-        values.firstName,
-        values.lastName,
-        fireAuth.currentUser?.uid
-      );
-      const activeUserId = fireAuth.currentUser?.uid;
-      if (!activeUserId) return;
-      await userService.isItOnline(activeUserId, true);
-    } catch (error) {
-      return thunkApi.rejectWithValue(error);
+    const signupResult = await AuthService.signup(
+      values.email,
+      values.password
+    );
+    if (!signupResult.success) {
+      thunkApi.rejectWithValue(signupResult.message);
+    }
+    const user = await userService.initialUser(
+      values.firstName,
+      values.lastName,
+      fireAuth.currentUser?.uid
+    );
+    if (!user.success) {
+      thunkApi.rejectWithValue(signupResult.message);
+    }
+    const activeUserId = fireAuth.currentUser?.uid;
+    if (!activeUserId) return;
+    const res = await userService.isItOnline(activeUserId, true);
+    if (!res.success) {
+      thunkApi.rejectWithValue(res.message);
     }
   }
 );
 export const appLogout = createAsyncThunk(
   "auth/appLogout",
   async (_, { rejectWithValue }) => {
-    try {
-      const activeUserId = fireAuth.currentUser?.uid;
-      if (!activeUserId) return;
-      await userService.isItOnline(activeUserId, false);
-      await AuthService.logout();
-    } catch (error) {
-      return rejectWithValue(error);
+    const activeUserId = fireAuth.currentUser?.uid;
+    if (!activeUserId) return;
+    await userService.isItOnline(activeUserId, false);
+    const res = await AuthService.logout();
+    if (!res.success) {
+      rejectWithValue(res.message);
     }
   }
 );

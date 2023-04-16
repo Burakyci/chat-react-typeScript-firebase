@@ -10,18 +10,17 @@ const MessageList: React.FC = () => {
 
   return (
     <div className="messageList">
-      <h1 style={{ color: "red" }}>{roomsData.roomsData?.data?.chatId}</h1>
+      <h1 style={{ color: "red" }}>{roomsData.roomsData?.chatId}</h1>
       {roomsData.loading ? (
         <>Bir Oda Seç</>
       ) : (
         <div className="messages">
-          {roomsData.roomsData?.data?.messages?.map((value, index) => (
+          {roomsData.roomsData?.messages?.map((value, index) => (
             <div key={index}>
               <p>{value.message}</p>
-              <p>{value.fromUser}</p>
+              <p>{value.fromUserId}</p>
               <FaCheck />
               <p>{value.date}</p>
-              <p>{value.toUserId}</p>
             </div>
           ))}
         </div>

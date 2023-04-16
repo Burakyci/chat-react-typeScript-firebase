@@ -1,6 +1,6 @@
 import { IOperationResult } from "../models/commonModel";
 import { UserModel } from "../models/userModel";
-import { ChatModel, IChatModel } from "../models/chatModel";
+import { MessageModel, IMessageModel } from "../models/chatModel";
 
 export interface ILoginSignupType {
   error: any;
@@ -15,7 +15,7 @@ export interface IInitialStateAuthType {
 
 export interface IInitialUserType {
   userList: {
-    data: IOperationResult<UserModel[]> | undefined | null;
+    data: UserModel[] | undefined;
     loading: boolean;
     error: string | undefined;
   };
@@ -48,17 +48,17 @@ export interface IInitialStateChatType {
   };
   roomsData: {
     loading: boolean;
-    roomsData: undefined | IOperationResult<IChatRoomData>;
+    roomsData: undefined | IChatRoomData;
     error: null | string;
   };
   sendMessageData: {
     loading: boolean;
-    message: undefined | ChatModel;
+    message: undefined | MessageModel;
     error: null | string;
   };
   userGetId: {
     loading: boolean;
-    roomIds: undefined | IOperationResult<any>;
+    roomIds: string[];
     error: null | string;
   };
 }
@@ -78,5 +78,5 @@ export interface IISendMessageParam {
 export interface IChatRoomData {
   chatId: string;
   members: string[];
-  messages: IChatModel[] | undefined;
+  messages: IMessageModel[] | undefined;
 }

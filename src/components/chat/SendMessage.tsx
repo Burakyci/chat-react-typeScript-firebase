@@ -15,11 +15,11 @@ const SendMessage: React.FC = () => {
   const sendMessages = (message: string, e: any) => {
     e.preventDefault();
     const values = {
-      to: roomsData.roomsData?.data?.members?.find(
+      to: roomsData.roomsData?.members?.find(
         (userId: string) => userId !== activeUser
       ),
       from: activeUser,
-      roomId: roomsData.roomsData?.data?.chatId,
+      roomId: roomsData.roomsData?.chatId ?? "",
       message,
     };
     dispatch(sendMessage(values));

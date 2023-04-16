@@ -5,18 +5,18 @@ import { IInitialUserType } from "../../types";
 export const getUserList = createAsyncThunk(
   "user/userList",
   async (_, thunkApi) => {
-    try {
-      const res = await UserService.getUsers();
-      return res;
-    } catch (error) {
-      thunkApi.rejectWithValue(error);
+    const res = await UserService.getUsers({});
+
+    if (!res.success) {
+      thunkApi.rejectWithValue(res.message);
     }
+    return res.data;
   }
 );
 
 const initialState: IInitialUserType = {
   userList: {
-    data: null,
+    data: [],
     loading: true,
     error: undefined,
   },
@@ -26,7 +26,10 @@ export const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
-    updateUser: (state, action) => {
+    updateUsers: (state, action) => {
+      state.userList.data = action.payload;
+    },
+    isOnline: (state, action) => {
       state.userList.data = action.payload;
     },
   },
@@ -47,6 +50,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateUser } = userSlice.actions;
+export const { updateUsers } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -24,7 +24,7 @@ const initialState: IInitialStateChatType = {
   },
   userGetId: {
     loading: true,
-    roomIds: undefined,
+    roomIds: [],
     error: null,
   },
 };
@@ -33,7 +33,7 @@ export const createRoom = createAsyncThunk(
   async (values: IICreateRoomParam, thunkApi: any) => {
     try {
       const createRoom = await chatService.createRoom(values.to, values.from);
-      return createRoom;
+      return createRoom.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -44,7 +44,7 @@ export const getRoom = createAsyncThunk(
   async (chatId: string, thunkApi: any) => {
     try {
       const getRoom = await chatService.getRoom(chatId);
-      return getRoom;
+      return getRoom.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -55,13 +55,8 @@ export const sendMessage = createAsyncThunk(
   async (values: IISendMessageParam, thunkApi: any) => {
     try {
       const { from, to, message, roomId } = values;
-      const sendMessage = await chatService.sendMessage(
-        to,
-        from,
-        roomId,
-        message
-      );
-      return sendMessage;
+      const sendMessage = await chatService.sendMessage(from, roomId, message);
+      return sendMessage.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -72,7 +67,7 @@ export const getRoomIds = createAsyncThunk(
   async (userId: string, thunkApi: any) => {
     try {
       const userGetRoomId = await chatService.getRoomIds(userId);
-      return userGetRoomId;
+      return userGetRoomId.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -85,6 +80,9 @@ export const chatSlice = createSlice({
   reducers: {
     updateRoomsData: (state, action) => {
       state.roomsData = action.payload;
+    },
+    updateUserRoomId: (state, action) => {
+      state.userGetId.roomIds = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -143,5 +141,5 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { updateRoomsData } = chatSlice.actions;
+export const { updateRoomsData, updateUserRoomId } = chatSlice.actions;
 export default chatSlice.reducer;

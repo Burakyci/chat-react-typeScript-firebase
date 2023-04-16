@@ -11,8 +11,9 @@ import {
   where,
   onSnapshot,
 } from "firebase/firestore";
-import { ChatModel, IChatModel, RoomModel } from "../models/chatModel";
-import { IChatRoomData } from "../types";
+import { MessageModel, IMessageModel, RoomModel } from "../models/chatModel";
+import { IChatRoomData, IUserData } from "../types";
+import { Unsubscribe } from "firebase/auth";
 
 class ChatService {
   private userColRef = collection(db, "users");
@@ -93,16 +94,14 @@ class ChatService {
     }
   };
   sendMessage = async (
-    to: string | undefined,
-    from: string,
+    fromUserId: string,
     roomId: string | undefined,
     message: string
-  ): Promise<OperationResult<IChatModel>> => {
-    const chatModel = new ChatModel({
+  ): Promise<OperationResult<IMessageModel>> => {
+    const IChatModel = new MessageModel({
       date: Date.now(),
       message: message,
-      toUserId: to,
-      fromUser: from,
+      fromUserId: fromUserId,
       read: false,
     });
     try {
@@ -110,14 +109,14 @@ class ChatService {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const chats = docSnap.data()?.chats || [];
-        chats.push(chatModel.toJSON());
+        chats.push(IChatModel.toJSON());
         await updateDoc(docRef, { chats: chats });
       } else {
-        await setDoc(docRef, { ...chatModel });
+        await setDoc(docRef, { ...IChatModel });
       }
       return new OperationResult({
         success: false,
-        data: chatModel,
+        data: IChatModel,
       });
     } catch (error: any) {
       console.log(error.message);
@@ -138,28 +137,47 @@ class ChatService {
         });
       }
       const userData = userDocSnap.data();
-      const roomsData = userData.chatRooms;
+      const roomsData = userData.chatRooms.roomId;
 
       return new OperationResult({
         success: false,
         data: roomsData,
       });
     } catch (error: any) {
-      console.log(error.message);
       return new OperationResult({
         success: true,
         message: error.message,
       });
     }
   };
+  getRooomIdsSub = (
+    userId: string,
+    update: (userRoomIds: string[]) => void
+  ) => {
+    let userRoomIds: string[] = [];
+    const q = doc(this.userColRef, `${userId}`);
+    const subs: Unsubscribe = onSnapshot(q, (user) => {
+      const chatRooms = user.data()?.chatRooms?.roomId || [];
+      userRoomIds = [...chatRooms];
+
+      update(userRoomIds);
+    });
+    return subs;
+  };
   getChatRoomSub = (userId: string, cb: (rooms: IChatRoomData[]) => void) => {
-    const q = query(this.chatsColRef, where("userId", "==", userId));
+    // const q = query(this.chatsColRef, where("userId", "==", userId));
+    const q = query(
+      this.chatsColRef,
+      where("members", "array-contains", userId)
+    );
+
     const subs = onSnapshot(q, (qss) => {
       const data = qss.docs.map((d) => {
         return new RoomModel(d.id, d.data() as IChatRoomData);
       });
       cb(data);
     });
+
     return subs;
   };
 }

@@ -7,12 +7,12 @@ import {
   getDoc,
   onSnapshot,
   Unsubscribe,
+  query,
+  where,
 } from "firebase/firestore";
 import { UserModel } from "../models/userModel";
-import { db, messaging } from "../config/FirebaseConfig";
+import { db } from "../config/FirebaseConfig";
 import { OperationResult } from "../models/commonModel";
-import { IChatModel } from "../models/chatModel";
-import { IUserData } from "../types";
 
 class UserService {
   private usersColRef = collection(db, "users");
@@ -35,9 +35,21 @@ class UserService {
       });
     }
   };
-  getUsers = async (): Promise<OperationResult<UserModel[]>> => {
+  getUsers = async (params: {
+    onlyVerified?: boolean;
+    onlyOnline?: boolean;
+  }): Promise<OperationResult<UserModel[]>> => {
     try {
-      const querySnapShot = await getDocs(this.usersColRef);
+      const c = [];
+      const { onlyOnline, onlyVerified } = params;
+      if (onlyVerified) {
+        where("emailVerified", "==", onlyVerified);
+      }
+      if (onlyOnline) {
+        c.push(where("isOnline", "==", onlyOnline));
+      }
+      const q = query(this.usersColRef, ...c);
+      const querySnapShot = await getDocs(q);
       let users: UserModel[] = [];
       if (querySnapShot.empty) {
         return new OperationResult({
@@ -77,31 +89,38 @@ class UserService {
       return new OperationResult({ success: false, message: error.message });
     }
   };
-  getUserSub = (update: (users: UserModel) => void): any => {
+  getUsersSub = (
+    onlyOnline: boolean,
+    update: (users: UserModel[]) => void
+  ): any => {
     try {
-      let users: UserModel[] = [];
-      const unSub: Unsubscribe = onSnapshot(
-        this.usersColRef,
-        (querySnapShot) => {
-          if (querySnapShot.empty) {
-            return new OperationResult({
-              success: false,
-              message: "we dont have user",
-            });
-          }
-          querySnapShot.forEach((doc) => {
-            const user = new UserModel({
-              id: doc.id,
-              firstName: doc.data().firstName,
-              lastName: doc.data().lastName,
-              online: doc.data().online,
-            }) as UserModel;
-            users.push(user);
-            update(user);
-          });
-          return unSub;
-        }
+      const q = query(
+        collection(db, "users"),
+        where("online", "==", onlyOnline)
       );
+      const unSubGetUser: Unsubscribe = onSnapshot(q, (user) => {
+        if (user.empty) {
+          return new OperationResult({
+            success: false,
+            message: "we dont have user",
+          });
+        }
+        let users: UserModel[] = [];
+        user.docs.forEach((doc) => {
+          const user = new UserModel({
+            id: doc.id,
+            firstName: doc.data().firstName,
+            lastName: doc.data().lastName,
+            online: doc.data().online,
+          }) as UserModel;
+          users.push(user);
+        });
+        // update(users);
+        console.log(users);
+        update(users);
+
+        return unSubGetUser;
+      });
     } catch (error: any) {
       return new OperationResult({ success: false, message: error.message });
     }
@@ -109,15 +128,20 @@ class UserService {
 }
 
 export default new UserService();
-
-// const a: IUserData[] = [];
-// const docRef = doc(this.usersColRef, `${userId}`);
-// console.log(a);
-// const unsub = onSnapshot(docRef, (doc) => {
-//   const data = doc.data();
-//   if (data) {
-//     const userData = Object.assign({}, data) as IUserData;
-//     a.push(userData);
+// getUsersSub = async (
+//   onlyOnline: boolean
+//   // update: (users: UserModel[]) => void
+// ): Promise<any> => {
+//   try {
+//     const q = query(
+//       collection(db, "users"),
+//       where("online", "==", onlyOnline)
+//     );
+//     const querySnapshot = await getDocs(q);
+//     querySnapshot.forEach((doc) => {
+//       console.log(doc.id, " => ", doc.data());
+//     });
+//   } catch (error) {
+//     console.error(error);
 //   }
-// });
-// const querySnapShot = await getDocs(this.usersColRef);
+// };

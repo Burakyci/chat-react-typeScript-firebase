@@ -1,13 +1,13 @@
 export interface IOperationResult<T> {
   success: boolean;
   message?: string;
-  data?: T | null;
+  data?: T;
 }
 
 export class OperationResult<T> implements IOperationResult<T> {
   success = false;
   message?: string;
-  data?: T | null = null;
+  data?: T | undefined;
 
   constructor(params?: IOperationResult<T>) {
     Object.assign(this, params);

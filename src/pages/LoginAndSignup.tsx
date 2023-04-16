@@ -6,8 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { appLogin, appSignup } from "../state/slices/authSlice";
 import { useAppDispatch, RootState } from "../state/store";
 import { useSelector } from "react-redux";
-import { ChildProcess } from "child_process";
-const LoginAndSignup = () => {
+const LoginAndSignup: React.FC = () => {
   const [mode, setMode] = useState(true);
   const dispatch = useAppDispatch();
   const { login, signup, user } = useSelector(
