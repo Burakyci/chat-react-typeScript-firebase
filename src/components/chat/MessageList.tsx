@@ -4,6 +4,8 @@ import { RootState } from "../../state/store";
 import SendMessage from "./SendMessage";
 import { FaCheck } from "react-icons/fa";
 import "../../styles/messageList.scss";
+import userService from "../../services/userService";
+import chatService from "../../services/chatService";
 
 const MessageList: React.FC = () => {
   const { roomsData } = useSelector((state: RootState) => state.chatSlice);

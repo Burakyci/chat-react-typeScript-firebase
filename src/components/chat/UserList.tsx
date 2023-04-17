@@ -21,13 +21,11 @@ const UserList: React.FC = () => {
     };
     dispatch(createRoom(values));
   };
-  console.log(isOnline);
   useEffect(() => {
     let userSub: Unsubscribe;
 
     userSub = userService.getUsersSub(isOnline, (users) => {
       dispatch(updateUsers(users));
-      console.log(users);
     });
     console.log(isOnline);
     return () => {

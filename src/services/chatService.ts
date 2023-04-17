@@ -14,6 +14,7 @@ import {
 import { MessageModel, IMessageModel, RoomModel } from "../models/chatModel";
 import { IChatRoomData, IUserData } from "../types";
 import { Unsubscribe } from "firebase/auth";
+import { REPL_MODE_SLOPPY } from "repl";
 
 class ChatService {
   private userColRef = collection(db, "users");
@@ -164,23 +165,28 @@ class ChatService {
     });
     return subs;
   };
-  getChatRoomSub = (userId: string, cb: (rooms: IChatRoomData[]) => void) => {
-    // const q = query(this.chatsColRef, where("userId", "==", userId));
+  getChatRoomSub = (
+    userId: string
+    // cb: (rooms: IChatRoomData[]) => void
+  ) => {
+    // const q = query(this.chatsColRef,where(''))
     const q = query(
       this.chatsColRef,
       where("members", "array-contains", userId)
     );
-
-    const subs = onSnapshot(q, (qss) => {
+    let rooms: IChatRoomData[] = [];
+    const subs: Unsubscribe = onSnapshot(q, (qss) => {
       const data = qss.docs.map((d) => {
         return new RoomModel(d.id, d.data() as IChatRoomData);
       });
-      cb(data);
+      rooms.push(...data);
     });
+    console.log(rooms);
 
     return subs;
   };
 }
+
 export default new ChatService();
 
 // class ChatService {

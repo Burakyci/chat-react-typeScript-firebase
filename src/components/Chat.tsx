@@ -11,7 +11,7 @@ import { Unsubscribe } from "firebase/firestore";
 import { updateUserRoomId, getRoomIds } from "../state/slices/chatSlice";
 import { authInit } from "../state/slices/authSlice";
 import { updateUsers, getUserList } from "../state/slices/userSlice";
-
+import { updateRoomsData } from "../state/slices/chatSlice";
 const Chat: React.FC = () => {
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
   let roomsSub: Unsubscribe;
@@ -20,6 +20,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     let roomIdSub: Unsubscribe;
     let userSub: Unsubscribe;
+    let roomDataSub: Unsubscribe;
     dispatch(authInit(user));
     dispatch(getRoomIds(user.uid));
     dispatch(getUserList());
@@ -29,7 +30,6 @@ const Chat: React.FC = () => {
     });
     userSub = userService.getUsersSub(true, (users) => {
       dispatch(updateUsers(users));
-      console.log(users);
     });
 
     userService.isItOnline(user.uid, true);

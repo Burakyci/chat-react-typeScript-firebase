@@ -116,7 +116,6 @@ class UserService {
           users.push(user);
         });
         // update(users);
-        console.log(users);
         update(users);
 
         return unSubGetUser;
