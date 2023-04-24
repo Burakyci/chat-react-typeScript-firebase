@@ -9,7 +9,9 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "./state/store";
 import { authInit } from "./state/slices/authSlice";
 import { RootState } from "./state/store";
-import { getUserList, updateUsers } from "./state/slices/userSlice";
+import { getMyProfile, getUserList } from "./state/slices/userSlice";
+import Profile from "./pages/Profile";
+import MyProfile from "./pages/MyProfile";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +22,7 @@ const AppRouter: React.FC = () => {
       if (user) {
         dispatch(authInit(user));
         dispatch(getUserList());
+        dispatch(getMyProfile(user.uid));
       }
       setLoading(false);
     });
@@ -40,6 +43,10 @@ const AppRouter: React.FC = () => {
           ) : (
             <>
               <Route path="/" element={<Home />} />
+
+              <Route path="/users/:userId" element={<Profile />} />
+              <Route path="/myProfile" element={<MyProfile />} />
+
               <Route path="*" element={<Page404Found />} />
             </>
           )}

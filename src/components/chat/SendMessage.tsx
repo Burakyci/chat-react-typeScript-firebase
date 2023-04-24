@@ -1,25 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "../../styles/sendMessage.scss";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../state/store";
 import { sendMessage } from "../../state/slices/chatSlice";
-import "../../styles/sendMessage.scss";
+import { IPropsRoomListToMessageList } from "../../types";
 
-const SendMessage: React.FC = () => {
+const SendMessage: React.FC<IPropsRoomListToMessageList> = ({ room }) => {
   const dispatch = useAppDispatch();
+  const { roomsData } = useSelector((state: RootState) => state.chatSlice);
+
+  useEffect(() => {}, [room]);
 
   const { user } = useSelector((state: RootState) => state.authSlice);
-  const { roomsData } = useSelector((state: RootState) => state.chatSlice);
   const activeUser = user.uid;
   const [message, setMessage] = useState("");
 
+  let chatRoomId = roomsData?.data?.[room]?.chatId || null;
   const sendMessages = (message: string, e: any) => {
     e.preventDefault();
     const values = {
-      to: roomsData.roomsData?.members?.find(
-        (userId: string) => userId !== activeUser
-      ),
       from: activeUser,
-      roomId: roomsData.roomsData?.chatId ?? "",
+      roomId: chatRoomId as string,
       message,
     };
     dispatch(sendMessage(values));

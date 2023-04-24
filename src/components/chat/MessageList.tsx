@@ -1,35 +1,73 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import SendMessage from "./SendMessage";
 import { FaCheck } from "react-icons/fa";
 import "../../styles/messageList.scss";
-import userService from "../../services/userService";
-import chatService from "../../services/chatService";
 
-const MessageList: React.FC = () => {
+import { IPropsRoomListToMessageList } from "../../types";
+import { IMessageModel } from "../../models/chatModel";
+import { spawn } from "child_process";
+
+const MessageList: React.FC<IPropsRoomListToMessageList> = ({ room }) => {
   const { roomsData } = useSelector((state: RootState) => state.chatSlice);
-
+  const { myProfile, anotherUser } = useSelector(
+    (state: RootState) => state.userSlice
+  );
+  const onlineStyle = {
+    display: "inline-block",
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "green",
+  };
+  const offlineStyle = {
+    display: "inline-block",
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "red",
+  };
   return (
     <div className="messageList">
-      <h1 style={{ color: "red" }}>{roomsData.roomsData?.chatId}</h1>
-      {roomsData.loading ? (
-        <>Bir Oda Seç</>
-      ) : (
-        <div className="messages">
-          {roomsData.roomsData?.messages?.map((value, index) => (
-            <div key={index}>
-              <p>{value.message}</p>
-              <p>{value.fromUserId}</p>
-              <FaCheck />
-              <p>{value.date}</p>
+      <div className="messageBox">
+        {roomsData?.data && room !== undefined ? (
+          <div>
+            <div className="anotherUser">
+              <img src={anotherUser.data?.profilePhoto} alt="" />
+              <h4>
+                {anotherUser.data?.firstName.toLocaleUpperCase()}{" "}
+                {anotherUser.data?.lastName.toLocaleUpperCase()}
+                {anotherUser.data?.online ? (
+                  <span style={onlineStyle}></span>
+                ) : (
+                  <span style={offlineStyle}></span>
+                )}
+              </h4>
             </div>
-          ))}
-        </div>
-      )}
-      <SendMessage />
+            {roomsData.data[room]?.messages?.map(
+              (value: IMessageModel, index: number) => (
+                <div className="eachBox" key={index}>
+                  <div className="messageCheck">
+                    <p className="message">{value.message}</p>
+                    <FaCheck className="check" />
+                  </div>
+                  <p className="date">
+                    {value.date ? value.date.toDate().toLocaleString() : ""}
+                  </p>
+                  <hr />
+                </div>
+              )
+            )}
+          </div>
+        ) : (
+          <>no message</>
+        )}
+      </div>
+      <div>
+        <SendMessage room={room} />
+      </div>
     </div>
   );
 };
-
 export default MessageList;

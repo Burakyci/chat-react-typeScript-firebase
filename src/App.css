@@ -1,22 +1,35 @@
 * {
-  color: white;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
 }
 body {
-  background-color: black;
+  background: radial-gradient(
+    circle at center,
+    #c226c2,
+    #808080,
+    rgb(138, 105, 105)
+  );
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
 }
 
-input {
-  color: black;
+blockquote,
+q {
+  quotes: none;
 }
-button {
-  color: black;
-}
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: white;
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
 }

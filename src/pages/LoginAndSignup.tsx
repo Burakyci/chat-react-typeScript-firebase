@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { appLogin, appSignup } from "../state/slices/authSlice";
 import { useAppDispatch, RootState } from "../state/store";
 import { useSelector } from "react-redux";
+import { FaUserAlt } from "react-icons/fa";
 const LoginAndSignup: React.FC = () => {
   const [mode, setMode] = useState(true);
   const dispatch = useAppDispatch();
@@ -58,6 +59,7 @@ const LoginAndSignup: React.FC = () => {
       <Toaster />
       {mode ? (
         <form onSubmit={formikLogin.handleSubmit}>
+          <FaUserAlt className="avatar" />
           <input
             id="email"
             placeholder="E-Mail"
@@ -67,8 +69,10 @@ const LoginAndSignup: React.FC = () => {
             value={formikLogin.values.email}
           />
           {formikLogin.touched.email && formikLogin.errors.email ? (
-            <div style={{ color: "red" }}>{formikLogin.errors.email}</div>
-          ) : null}
+            <p className="error">{formikLogin.errors.email}</p>
+          ) : (
+            <p></p>
+          )}
           <input
             id="password"
             placeholder="Password"
@@ -78,8 +82,10 @@ const LoginAndSignup: React.FC = () => {
             value={formikLogin.values.password}
           />
           {formikLogin.touched.password && formikLogin.errors.password ? (
-            <div style={{ color: "red" }}>{formikLogin.errors.password}</div>
-          ) : null}
+            <p>{formikLogin.errors.password}</p>
+          ) : (
+            <p></p>
+          )}
           <button disabled={login.loading} type="submit">
             {login.loading ? "Loading..." : "Login"}
           </button>{" "}
@@ -93,6 +99,7 @@ const LoginAndSignup: React.FC = () => {
         </form>
       ) : (
         <form onSubmit={formikSignup.handleSubmit}>
+          <FaUserAlt className="avatar" />
           <input
             placeholder="first Name"
             id="firstName"
@@ -102,8 +109,10 @@ const LoginAndSignup: React.FC = () => {
             value={formikSignup.values.firstName}
           />
           {formikSignup.touched.firstName && formikSignup.errors.firstName ? (
-            <div style={{ color: "red" }}>{formikSignup.errors.firstName}</div>
-          ) : null}
+            <p className="error">{formikSignup.errors.firstName}</p>
+          ) : (
+            <p></p>
+          )}
           <input
             placeholder="Last Name"
             id="lastName"
@@ -113,8 +122,10 @@ const LoginAndSignup: React.FC = () => {
             value={formikSignup.values.lastName}
           />
           {formikSignup.touched.lastName && formikSignup.errors.lastName ? (
-            <div style={{ color: "red" }}>{formikSignup.errors.lastName}</div>
-          ) : null}
+            <p className="error">{formikSignup.errors.lastName}</p>
+          ) : (
+            <p></p>
+          )}
           <input
             placeholder="E-Mail"
             id="email"
@@ -124,7 +135,7 @@ const LoginAndSignup: React.FC = () => {
             value={formikSignup.values.email}
           />
           {formikSignup.touched.email && formikSignup.errors.email ? (
-            <div style={{ color: "red" }}>{formikSignup.errors.email}</div>
+            <p className="error"> {formikSignup.errors.email}</p>
           ) : null}
           <input
             placeholder="Password"
@@ -135,8 +146,10 @@ const LoginAndSignup: React.FC = () => {
             value={formikSignup.values.password}
           />
           {formikSignup.touched.password && formikSignup.errors.password ? (
-            <div style={{ color: "red" }}>{formikSignup.errors.lastName}</div>
-          ) : null}
+            <p className="error">{formikSignup.errors.lastName}</p>
+          ) : (
+            <p></p>
+          )}
           <button disabled={signup.loading} type="submit">
             {signup.loading ? "Loading..." : "Signup"}
           </button>{" "}

@@ -1,14 +1,15 @@
-import { IChatRoomData } from "../types";
+import { Timestamp } from "firebase/firestore";
+import { IRoomData } from "../types";
 
 export interface IMessageModel {
-  date?: any;
+  date?: Timestamp;
   message?: string;
   fromUserId: string | undefined;
   read: boolean;
 }
 
 export class MessageModel implements IMessageModel {
-  date? = Date.now();
+  date? = Timestamp.now();
   message = "";
   fromUserId = "";
   read = false;
@@ -24,11 +25,12 @@ export class MessageModel implements IMessageModel {
     };
   }
 }
-export class RoomModel implements IChatRoomData {
+export class RoomModel implements IRoomData {
   chatId = "";
   members = [];
+  membersName = [];
   messages = [];
-  constructor(id: string, data?: IChatRoomData) {
+  constructor(id: string, data: IRoomData) {
     this.chatId = id;
     if (data) {
       Object.assign(this, { ...data });

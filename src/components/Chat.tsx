@@ -1,35 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import "../styles/chat.scss";
 import RoomList from "./chat/RoomList";
 import UserList from "./chat/UserList";
-import MessageList from "./chat/MessageList";
 import userService from "../services/userService";
-import chatService from "../services/chatService";
 import { RootState, useAppDispatch } from "../state/store";
 import { useSelector } from "react-redux";
 import { Unsubscribe } from "firebase/firestore";
-import { updateUserRoomId, getRoomIds } from "../state/slices/chatSlice";
 import { authInit } from "../state/slices/authSlice";
 import { updateUsers, getUserList } from "../state/slices/userSlice";
-import { updateRoomsData } from "../state/slices/chatSlice";
+import chatService from "../services/chatService";
+import { getRoomData, updateRoomsData } from "../state/slices/chatSlice";
+
 const Chat: React.FC = () => {
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
-  let roomsSub: Unsubscribe;
   const dispatch = useAppDispatch();
   const { user } = useSelector((state: RootState) => state.authSlice);
-  useEffect(() => {
-    let roomIdSub: Unsubscribe;
-    let userSub: Unsubscribe;
-    let roomDataSub: Unsubscribe;
-    dispatch(authInit(user));
-    dispatch(getRoomIds(user.uid));
-    dispatch(getUserList());
+  const [selectedFile, setSelectedFile] = useState(null);
 
-    roomIdSub = chatService.getRooomIdsSub(user.uid, (id) => {
-      dispatch(updateUserRoomId(id));
+  useEffect(() => {
+    chatService.getChatRoom(user.uid);
+    let userSub: Unsubscribe;
+    let chatDataSub: Unsubscribe;
+    dispatch(authInit(user));
+    dispatch(getRoomData(user.uid));
+    dispatch(getUserList());
+    userSub = userService.getUsersSub(true, (user) => {
+      dispatch(updateUsers(user));
     });
-    userSub = userService.getUsersSub(true, (users) => {
-      dispatch(updateUsers(users));
+
+    chatDataSub = chatService.getChatRoomSub(user.uid, (room) => {
+      dispatch(updateRoomsData(room));
     });
 
     userService.isItOnline(user.uid, true);
@@ -37,7 +37,6 @@ const Chat: React.FC = () => {
       const currentTime = Date.now();
       const elapsedTime = currentTime - lastInteractionTime;
 
-      console.log(1);
       if (elapsedTime > 30000) {
         userService.isItOnline(user.uid, false);
       }
@@ -45,20 +44,23 @@ const Chat: React.FC = () => {
 
     return () => {
       clearInterval(timer);
-      if (typeof roomIdSub == "function") {
-        roomIdSub();
-      }
 
+      if (typeof chatDataSub === "function") {
+        chatDataSub();
+      }
       if (typeof userSub === "function") {
         userSub();
       }
     };
   }, []);
 
+  const handleFileInput = (e: any) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
   return (
-    <div className="chat">
+    <div className="chat" style={{ display: "flex" }}>
       <RoomList />
-      <MessageList />
       <UserList />
     </div>
   );

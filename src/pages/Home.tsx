@@ -3,25 +3,11 @@ import { useAppDispatch } from "../state/store";
 import { appLogout } from "../state/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import Chat from "../components/Chat";
+import Navbar from "../components/Navbar";
 const Home: React.FC = () => {
-  const navi = useNavigate();
-
-  const dispatch = useAppDispatch();
-  const logout = async () => {
-    await dispatch(appLogout());
-  };
-
   return (
     <div>
-      Home
-      <button
-        onClick={async () => {
-          logout();
-          await navi("/");
-        }}
-      >
-        Logout
-      </button>
+      <Navbar />
       <Chat />
     </div>
   );

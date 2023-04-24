@@ -14,7 +14,7 @@ const initialState: IInitialStateChatType = {
   },
   roomsData: {
     loading: true,
-    roomsData: undefined,
+    data: undefined,
     error: null,
   },
   sendMessageData: {
@@ -22,12 +22,15 @@ const initialState: IInitialStateChatType = {
     message: undefined,
     error: null,
   },
-  userGetId: {
-    loading: true,
-    roomIds: [],
-    error: null,
-  },
 };
+export const getRoomData = createAsyncThunk(
+  "chatSlice/getRoomData",
+  async (userId: string, thunkApi) => {
+    const res = await chatService.getChatRoom(userId);
+    if (res.success) return res.data;
+    thunkApi.rejectWithValue(res.message);
+  }
+);
 export const createRoom = createAsyncThunk(
   "auth/createRoom",
   async (values: IICreateRoomParam, thunkApi: any) => {
@@ -39,35 +42,14 @@ export const createRoom = createAsyncThunk(
     }
   }
 );
-export const getRoom = createAsyncThunk(
-  "auth/getRoom",
-  async (chatId: string, thunkApi: any) => {
-    try {
-      const getRoom = await chatService.getRoom(chatId);
-      return getRoom.data;
-    } catch (error: any) {
-      return thunkApi.rejectWithValue(error.message);
-    }
-  }
-);
+
 export const sendMessage = createAsyncThunk(
   "auth/sendMessage",
   async (values: IISendMessageParam, thunkApi: any) => {
     try {
-      const { from, to, message, roomId } = values;
+      const { from, message, roomId } = values;
       const sendMessage = await chatService.sendMessage(from, roomId, message);
       return sendMessage.data;
-    } catch (error: any) {
-      return thunkApi.rejectWithValue(error.message);
-    }
-  }
-);
-export const getRoomIds = createAsyncThunk(
-  "auth/userGetRoomId",
-  async (userId: string, thunkApi: any) => {
-    try {
-      const userGetRoomId = await chatService.getRoomIds(userId);
-      return userGetRoomId.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -79,10 +61,7 @@ export const chatSlice = createSlice({
   initialState,
   reducers: {
     updateRoomsData: (state, action) => {
-      state.roomsData = action.payload;
-    },
-    updateUserRoomId: (state, action) => {
-      state.userGetId.roomIds = action.payload;
+      state.roomsData.data = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -100,18 +79,19 @@ export const chatSlice = createSlice({
         state.createRoomId.error = action.payload as string;
       });
     builder
-      .addCase(getRoom.pending, (state) => {
+      .addCase(getRoomData.pending, (state) => {
         state.roomsData.loading = true;
       })
-      .addCase(getRoom.fulfilled, (state, action) => {
+      .addCase(getRoomData.fulfilled, (state, action) => {
         state.roomsData.loading = false;
         state.roomsData.error = null;
-        state.roomsData.roomsData = action.payload;
+        state.roomsData.data = action.payload;
       })
-      .addCase(getRoom.rejected, (state, action) => {
+      .addCase(getRoomData.rejected, (state, action) => {
         state.roomsData.loading = false;
         state.roomsData.error = action.payload as string;
       });
+
     builder
       .addCase(sendMessage.pending, (state) => {
         state.sendMessageData.loading = true;
@@ -125,21 +105,8 @@ export const chatSlice = createSlice({
         state.sendMessageData.loading = false;
         state.sendMessageData.error = action.payload as string;
       });
-    builder
-      .addCase(getRoomIds.pending, (state) => {
-        state.userGetId.loading = true;
-      })
-      .addCase(getRoomIds.fulfilled, (state, action) => {
-        state.userGetId.loading = false;
-        state.userGetId.error = null;
-        state.userGetId.roomIds = action.payload;
-      })
-      .addCase(getRoomIds.rejected, (state, action) => {
-        state.userGetId.loading = false;
-        state.userGetId.error = action.payload as string;
-      });
   },
 });
 
-export const { updateRoomsData, updateUserRoomId } = chatSlice.actions;
+export const { updateRoomsData } = chatSlice.actions;
 export default chatSlice.reducer;

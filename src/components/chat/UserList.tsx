@@ -6,7 +6,6 @@ import { createRoom } from "../../state/slices/chatSlice";
 import { Unsubscribe } from "firebase/auth";
 import userService from "../../services/userService";
 import { updateUsers } from "../../state/slices/userSlice";
-import { boolean } from "yup";
 const UserList: React.FC = () => {
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const { user } = useSelector((state: RootState) => state.authSlice);
@@ -15,25 +14,35 @@ const UserList: React.FC = () => {
   const activeUser = user.uid;
 
   const createOneRoom = (to: string) => {
-    const values = {
-      to,
-      from: user.uid,
-    };
+    const values = { to, from: user.uid };
     dispatch(createRoom(values));
   };
   useEffect(() => {
     let userSub: Unsubscribe;
-
     userSub = userService.getUsersSub(isOnline, (users) => {
       dispatch(updateUsers(users));
     });
-    console.log(isOnline);
     return () => {
       if (typeof userSub === "function") {
         userSub();
       }
     };
   }, [isOnline]);
+
+  const onlineStyle = {
+    display: "inline-block",
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "green",
+  };
+  const offlineStyle = {
+    display: "inline-block",
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "red",
+  };
 
   return (
     <div className="userList">
@@ -46,61 +55,46 @@ const UserList: React.FC = () => {
       />
 
       {userList.data?.map((value: IUserData, key) => (
-        <div key={key} className="user" onClick={() => createOneRoom(value.id)}>
+        <div key={key} className="user">
           {value.id === activeUser ? (
             <div>
-              <span style={{ color: "green" }}>{value.firstName} </span>
+              <img
+                style={{ width: "50px", height: "50px" }}
+                src={value.profilePhoto}
+                alt="profile photo"
+              />
+
+              <p style={{ color: "green" }}>{value.firstName} </p>
               <span>
                 {value.online ? (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "10px",
-                      height: "10px",
-                      borderRadius: "50%",
-                      backgroundColor: "green",
-                    }}
-                  ></span>
+                  <span style={onlineStyle}></span>
                 ) : (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "10px",
-                      height: "10px",
-                      borderRadius: "50%",
-                      backgroundColor: "red",
-                    }}
-                  ></span>
+                  <span style={offlineStyle}></span>
                 )}
               </span>
             </div>
           ) : (
-            <p>
-              {value.firstName}
-              <span>
-                {value.online ? (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "10px",
-                      height: "10px",
-                      borderRadius: "50%",
-                      backgroundColor: "green",
-                    }}
-                  ></span>
-                ) : (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "10px",
-                      height: "10px",
-                      borderRadius: "50%",
-                      backgroundColor: "red",
-                    }}
-                  ></span>
-                )}
-              </span>
-            </p>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => createOneRoom(value.id)}
+            >
+              <div>
+                <img
+                  style={{ width: "50px", height: "50px" }}
+                  src={value.profilePhoto}
+                  alt="profile photo"
+                />
+
+                <p>{value.firstName}</p>
+                <span>
+                  {value.online ? (
+                    <span style={onlineStyle}></span>
+                  ) : (
+                    <span style={offlineStyle}></span>
+                  )}
+                </span>
+              </div>
+            </div>
           )}
         </div>
       ))}

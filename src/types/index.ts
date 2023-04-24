@@ -1,6 +1,6 @@
 import { IOperationResult } from "../models/commonModel";
 import { UserModel } from "../models/userModel";
-import { MessageModel, IMessageModel } from "../models/chatModel";
+import { MessageModel, IMessageModel, RoomModel } from "../models/chatModel";
 
 export interface ILoginSignupType {
   error: any;
@@ -19,6 +19,16 @@ export interface IInitialUserType {
     loading: boolean;
     error: string | undefined;
   };
+  anotherUser: {
+    data: IUserData | undefined;
+    loading: boolean;
+    error: string | undefined;
+  };
+  myProfile: {
+    data: IUserData | undefined;
+    loading: boolean;
+    error: string | undefined;
+  };
 }
 
 export interface IUserData {
@@ -26,6 +36,7 @@ export interface IUserData {
   lastName: string;
   id: string;
   online: boolean | undefined;
+  profilePhoto: string;
 }
 
 export interface IUserSignupType {
@@ -48,17 +59,12 @@ export interface IInitialStateChatType {
   };
   roomsData: {
     loading: boolean;
-    roomsData: undefined | IChatRoomData;
+    data: undefined | RoomModel[];
     error: null | string;
   };
   sendMessageData: {
     loading: boolean;
     message: undefined | MessageModel;
-    error: null | string;
-  };
-  userGetId: {
-    loading: boolean;
-    roomIds: string[];
     error: null | string;
   };
 }
@@ -69,14 +75,22 @@ export interface IICreateRoomParam {
 }
 
 export interface IISendMessageParam {
-  to: string | undefined;
   from: string;
   roomId: string | undefined;
   message: string;
 }
+export interface IMembers {
+  id: string;
+  name: string;
+  lastName: string;
+}
 
-export interface IChatRoomData {
-  chatId: string;
-  members: string[];
-  messages: IMessageModel[] | undefined;
+export interface IRoomData {
+  chatId?: string;
+  members?: string[];
+  membersName?: string[];
+  messages?: IRoomData[];
+}
+export interface IPropsRoomListToMessageList {
+  room: number;
 }
