@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
+import "../../styles/roomList.scss";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../state/store";
 import MessageList from "./MessageList";
 import userService from "../../services/userService";
-import { IRoomData, IUserData } from "../../types";
+import { IUserData } from "../../types";
 import { getAnotherUser } from "../../state/slices/userSlice";
 import { RoomModel } from "../../models/chatModel";
-import { string } from "yup";
 
 const RoomList: React.FC = () => {
   const dispatch = useAppDispatch();
   const { roomsData } = useSelector((state: RootState) => state.chatSlice);
   const [room, setRoom] = React.useState<IUserData[]>();
   const { user } = useSelector((state: RootState) => state.authSlice);
-  const { anotherUser } = useSelector((state: RootState) => state.userSlice);
-
-  const { myProfile } = useSelector((state: RootState) => state.userSlice);
 
   const [whichRoom, setWhichRoom] = useState<number>(0);
   useEffect(() => {
@@ -36,7 +33,6 @@ const RoomList: React.FC = () => {
       let anotherUserId = value.members.filter(
         (data: string) => data !== user.uid
       );
-      console.log(anotherUserId, user.uid);
       const { data } = await userService.getUser(anotherUserId[0]);
       if (data) {
         anotherUserData.push(data);
@@ -44,21 +40,17 @@ const RoomList: React.FC = () => {
       }
     });
   }, [roomsData]);
-  console.log(room);
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-around",
-        flexDirection: "column",
-      }}
-    >
+    <div className="roomListContainer">
       <div className="roomList">
         {room?.map((value, key) => (
           <div onClick={() => setWhichRoom(key)} key={key}>
-            {value.firstName}
-            {value.lastName}
-            <img src={value.profilePhoto} alt="." />
+            <img src={value.profilePhoto} alt="ProfilePhoto" />
+
+            <p>
+              {value.lastName.toLocaleUpperCase()}{" "}
+              {value.firstName.toLocaleUpperCase()}
+            </p>
           </div>
         ))}
       </div>

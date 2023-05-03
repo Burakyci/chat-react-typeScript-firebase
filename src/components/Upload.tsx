@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import userService from "../services/userService";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
+import "../styles/upload.scss";
 
 const Upload: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.authSlice);
@@ -18,15 +19,11 @@ const Upload: React.FC = () => {
       alert("somethings is wrong");
     }
   };
-  useEffect(() => {
-    (async () => {
-      await userService.deletedBeforePhoto(user.uid);
-    })();
-  }, []);
 
   return (
-    <div>
+    <div className="upload">
       <input
+        className="myFileInput"
         style={{ color: "white" }}
         type="file"
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -35,7 +32,9 @@ const Upload: React.FC = () => {
         accept="image/*"
       />
       <h2>{imageUpload?.name}</h2>
-      <button onClick={() => uploadImage()}>upload image</button>
+      <button className="uploadButton" onClick={() => uploadImage()}>
+        upload image
+      </button>
     </div>
   );
 };

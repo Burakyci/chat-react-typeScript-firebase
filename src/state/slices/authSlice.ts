@@ -4,7 +4,6 @@ import AuthService from "../../services/authService";
 import userService from "../../services/userService";
 import { IUserLoginType, IUserSignupType } from "../../types/";
 import { fireAuth } from "../../config/FirebaseConfig";
-import authService from "../../services/authService";
 
 const initialState: IInitialStateAuthType = {
   user: null,

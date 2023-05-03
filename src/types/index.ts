@@ -1,6 +1,5 @@
-import { IOperationResult } from "../models/commonModel";
 import { UserModel } from "../models/userModel";
-import { MessageModel, IMessageModel, RoomModel } from "../models/chatModel";
+import { MessageModel, RoomModel } from "../models/chatModel";
 
 export interface ILoginSignupType {
   error: any;
@@ -35,6 +34,12 @@ export interface IUserData {
   firstName: string;
   lastName: string;
   id: string;
+  online: boolean | undefined;
+  profilePhoto: string;
+}
+export interface ISearchUser {
+  firstName: string;
+  lastName: string;
   online: boolean | undefined;
   profilePhoto: string;
 }

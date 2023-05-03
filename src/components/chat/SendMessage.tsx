@@ -9,8 +9,6 @@ const SendMessage: React.FC<IPropsRoomListToMessageList> = ({ room }) => {
   const dispatch = useAppDispatch();
   const { roomsData } = useSelector((state: RootState) => state.chatSlice);
 
-  useEffect(() => {}, [room]);
-
   const { user } = useSelector((state: RootState) => state.authSlice);
   const activeUser = user.uid;
   const [message, setMessage] = useState("");

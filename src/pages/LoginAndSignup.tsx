@@ -10,9 +10,7 @@ import { FaUserAlt } from "react-icons/fa";
 const LoginAndSignup: React.FC = () => {
   const [mode, setMode] = useState(true);
   const dispatch = useAppDispatch();
-  const { login, signup, user } = useSelector(
-    (state: RootState) => state.authSlice
-  );
+  const { login, signup } = useSelector((state: RootState) => state.authSlice);
 
   const formikLogin = useFormik({
     initialValues: {

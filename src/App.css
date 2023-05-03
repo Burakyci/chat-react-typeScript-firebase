@@ -8,12 +8,7 @@
   background: transparent;
 }
 body {
-  background: radial-gradient(
-    circle at center,
-    #c226c2,
-    #808080,
-    rgb(138, 105, 105)
-  );
+  background: radial-gradient(circle at center, black, rgb(82, 80, 80));
   line-height: 1;
 }
 ol,

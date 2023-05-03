@@ -2,12 +2,14 @@
   height: 500px;
   display: flex;
   flex-direction: column;
-  background-color: #6f4329;
+  background-color: #322a26;
   justify-content: space-between;
   border-radius: 20px;
 
   .messageBox {
     height: 100%;
+    display: flex;
+    flex-direction: column;
     padding: 10px;
     overflow-y: auto;
     box-shadow: 10px 10px 100px 1px rgb(212, 212, 212);

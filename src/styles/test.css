@@ -10,7 +10,7 @@
   border: 2px solid;
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 10px 10px 10px gray;
+  box-shadow: 10px 10px 10px rgb(0, 0, 0);
 }
 .container form input {
   margin: 10px;
@@ -21,4 +21,4 @@
 .container form p {
   color: blue;
   cursor: pointer;
-}/*# sourceMappingURL=test.css.map */
+} /*# sourceMappingURL=test.css.map */

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import "../../styles/userList.scss";
 import { RootState, useAppDispatch } from "../../state/store";
 import { IUserData } from "../../types";
 import { createRoom } from "../../state/slices/chatSlice";
@@ -46,57 +47,73 @@ const UserList: React.FC = () => {
 
   return (
     <div className="userList">
-      <label htmlFor="">only Online Users</label>
-      <input
-        id="onlineUsers"
-        type="checkbox"
-        checked={isOnline}
-        onChange={() => setIsOnline(!isOnline)}
-      />
+      <div className="activeUserCheckBoxContainer">
+        <div>
+          <span className="switch">
+            <input
+              onChange={() => setIsOnline(!isOnline)}
+              type="checkbox"
+              id="switch-round"
+            />
+            <label htmlFor="switch-round"></label>
+          </span>
+        </div>
+      </div>
 
       {userList.data?.map((value: IUserData, key) => (
-        <div key={key} className="user">
-          {value.id === activeUser ? (
-            <div>
-              <img
-                style={{ width: "50px", height: "50px" }}
-                src={value.profilePhoto}
-                alt="profile photo"
-              />
+        <ul className="userLists">
+          <div key={key} className="user">
+            {value.id === activeUser ? (
+              <li>
+                <div>
+                  <img
+                    className="profilePhoto"
+                    src={value.profilePhoto}
+                    alt="profilePhoto"
+                  />
 
-              <p style={{ color: "green" }}>{value.firstName} </p>
-              <span>
-                {value.online ? (
-                  <span style={onlineStyle}></span>
-                ) : (
-                  <span style={offlineStyle}></span>
-                )}
-              </span>
-            </div>
-          ) : (
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => createOneRoom(value.id)}
-            >
-              <div>
-                <img
-                  style={{ width: "50px", height: "50px" }}
-                  src={value.profilePhoto}
-                  alt="profile photo"
-                />
+                  <p style={{ color: "green" }}>
+                    {" "}
+                    {value.firstName.toLocaleUpperCase()}{" "}
+                    {value.lastName.toLocaleUpperCase()}
+                  </p>
+                  <span>
+                    {value.online ? (
+                      <span style={onlineStyle}></span>
+                    ) : (
+                      <span style={offlineStyle}></span>
+                    )}
+                  </span>
+                </div>
+              </li>
+            ) : (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => createOneRoom(value.id)}
+              >
+                <div>
+                  <img
+                    className="profilePhoto"
+                    src={value.profilePhoto}
+                    alt="profilePhoto"
+                  />
 
-                <p>{value.firstName}</p>
-                <span>
-                  {value.online ? (
-                    <span style={onlineStyle}></span>
-                  ) : (
-                    <span style={offlineStyle}></span>
-                  )}
-                </span>
+                  <p>
+                    {value.firstName.toLocaleUpperCase()}{" "}
+                    {value.lastName.toLocaleUpperCase()}
+                  </p>
+                  <span>
+                    {value.online ? (
+                      <span style={onlineStyle}></span>
+                    ) : (
+                      <span style={offlineStyle}></span>
+                    )}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </ul>
       ))}
     </div>
   );

@@ -13,7 +13,6 @@ const MyProfile: React.FC = () => {
 
   return (
     <div>
-      <Upload />
       <div className="profile-card">
         <div className="profile-card__header">
           <img
@@ -46,9 +45,10 @@ const MyProfile: React.FC = () => {
               await navi("/");
             }}
           >
-            Let's Chat
+            update profile
           </button>
         </div>
+        <Upload />
       </div>
     </div>
   );

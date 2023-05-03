@@ -10,9 +10,6 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { UserModel } from "../models/userModel";
-import { db, storage } from "../config/FirebaseConfig";
-import { IOperationResult, OperationResult } from "../models/commonModel";
 import {
   getStorage,
   ref,
@@ -20,9 +17,10 @@ import {
   getDownloadURL,
   deleteObject,
   getMetadata,
-  FullMetadata,
 } from "firebase/storage";
-import { v4 } from "uuid";
+import { UserModel } from "../models/userModel";
+import { db, storage } from "../config/FirebaseConfig";
+import { IOperationResult, OperationResult } from "../models/commonModel";
 import { IUserData } from "../types";
 class UserService {
   private storage = getStorage();
@@ -143,11 +141,9 @@ class UserService {
     userId: string
   ): Promise<IOperationResult<string | null>> => {
     try {
-      const imageRef = ref(
-        storage,
-        `images/profileImages/${userId}/${file.name}+${v4()}`
-      );
-      const upload = await uploadBytes(imageRef, file);
+      await this.deleteProfilePhotoIfExists(userId);
+      const imageRef = ref(storage, `images/profileImages/${userId}.png`); // file name user uzerinede yaz
+      await uploadBytes(imageRef, file);
       let url: string;
       url = await getDownloadURL(imageRef);
       const userRef = doc(this.usersColRef, userId);
@@ -157,7 +153,6 @@ class UserService {
       } else {
         throw new Error("don't found doc");
       }
-      const desertRef = ref(storage, "images/desert.jpg");
 
       return new OperationResult({ success: false, data: url });
     } catch (error: any) {
@@ -165,20 +160,17 @@ class UserService {
       return new OperationResult({ success: false, message: error.message });
     }
   };
-  deletedBeforePhoto = async (
+
+  deleteProfilePhotoIfExists = async (
     userId: string
   ): Promise<IOperationResult<any>> => {
     try {
-      let metaData: FullMetadata;
-      const beforeRef = ref(storage, `images/profileImages/${userId}`);
-      const exists = await getMetadata(beforeRef);
+      const imageRef = ref(storage, `images/profileImages/${userId}.png`);
+
+      const exists = await getMetadata(imageRef);
 
       if (exists) {
-        console.log(exists);
-        metaData = await getMetadata(beforeRef);
-        if (metaData.size > 0) {
-          const deletedBefore = await deleteObject(beforeRef);
-        }
+        await deleteObject(imageRef);
         return new OperationResult({ success: true });
       } else {
         throw new Error("Depolama referansı mevcut değil.");
@@ -188,6 +180,7 @@ class UserService {
       return new OperationResult({ success: false, message: error.message });
     }
   };
+
   getUser = async (
     userId: string
   ): Promise<IOperationResult<IUserData | undefined>> => {
@@ -200,6 +193,47 @@ class UserService {
       }
       return new OperationResult({ success: false, data: userData });
     } catch (error: any) {
+      return new OperationResult({ success: false, message: error.message });
+    }
+  };
+
+  getSearchUser = async (
+    searchText: string
+  ): Promise<OperationResult<IUserData[]>> => {
+    try {
+      const q1 = query(
+        this.usersColRef,
+        where("firstName", ">=", searchText),
+        where("firstName", "<=", searchText)
+      );
+      const q2 = query(
+        this.usersColRef,
+        where("lastName", ">=", searchText),
+        where("lastName", "<=", searchText)
+      );
+
+      const [querySnapshot1, querySnapshot2] = await Promise.all([
+        getDocs(q1),
+        getDocs(q2),
+      ]);
+
+      const users: IUserData[] = [];
+
+      querySnapshot1.forEach((doc) => {
+        const user = doc.data();
+        user.id = doc.id;
+        const data = { ...user, ...user } as IUserData;
+        users.push(data);
+      });
+
+      querySnapshot2.forEach((doc) => {
+        const user = doc.data() as IUserData;
+        users.push(user);
+      });
+
+      return new OperationResult({ success: true, data: users });
+    } catch (error: any) {
+      console.log(error.message);
       return new OperationResult({ success: false, message: error.message });
     }
   };

@@ -12,6 +12,7 @@ import { RootState } from "./state/store";
 import { getMyProfile, getUserList } from "./state/slices/userSlice";
 import Profile from "./pages/Profile";
 import MyProfile from "./pages/MyProfile";
+import Navbar from "./components/Navbar";
 
 const AppRouter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -42,12 +43,14 @@ const AppRouter: React.FC = () => {
             <Route path="/" index={true} element={<LoginAndSignup />} />
           ) : (
             <>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Navbar />}>
+                <Route index={true} element={<Home />} />
 
-              <Route path="/users/:userId" element={<Profile />} />
-              <Route path="/myProfile" element={<MyProfile />} />
+                <Route path="/users/:userId" element={<Profile />} />
+                <Route path="/myProfile" element={<MyProfile />} />
 
-              <Route path="*" element={<Page404Found />} />
+                <Route path="*" element={<Page404Found />} />
+              </Route>
             </>
           )}
         </Routes>

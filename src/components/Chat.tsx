@@ -10,12 +10,12 @@ import { authInit } from "../state/slices/authSlice";
 import { updateUsers, getUserList } from "../state/slices/userSlice";
 import chatService from "../services/chatService";
 import { getRoomData, updateRoomsData } from "../state/slices/chatSlice";
+import Search from "./Search";
 
 const Chat: React.FC = () => {
-  const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
+  const [lastInteractionTime] = useState(Date.now());
   const dispatch = useAppDispatch();
   const { user } = useSelector((state: RootState) => state.authSlice);
-  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     chatService.getChatRoom(user.uid);
@@ -54,14 +54,13 @@ const Chat: React.FC = () => {
     };
   }, []);
 
-  const handleFileInput = (e: any) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
   return (
-    <div className="chat" style={{ display: "flex" }}>
-      <RoomList />
-      <UserList />
+    <div className="chat">
+      {/* <Search /> */}
+      <div>
+        <RoomList />
+        <UserList />
+      </div>
     </div>
   );
 };
