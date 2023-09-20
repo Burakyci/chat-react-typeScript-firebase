@@ -1,5 +1,6 @@
 import { UserModel } from "../models/userModel";
 import { MessageModel, RoomModel } from "../models/chatModel";
+import { User } from "firebase/auth";
 
 export interface ILoginSignupType {
   error: any;
@@ -7,7 +8,7 @@ export interface ILoginSignupType {
 }
 
 export interface IInitialStateAuthType {
-  user: any;
+  user: User | undefined | null;
   login: ILoginSignupType;
   signup: ILoginSignupType;
 }

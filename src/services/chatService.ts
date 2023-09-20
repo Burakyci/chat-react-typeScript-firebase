@@ -35,6 +35,27 @@ class ChatService {
       const fromName = userDocSnapFrom.data()?.firstName;
       const fromLastName = userDocSnapFrom.data()?.lastName;
 
+      // Check if a room with the same members already exists
+      const existingRoomQuery = query(
+        this.chatsColRef,
+        where("members", "==", [to, from])
+      );
+      const existingRoomQuery1 = query(
+        this.chatsColRef,
+        where("members", "==", [from, to])
+      );
+      const existingRoomQuerySnapshot = await getDocs(existingRoomQuery);
+      const existingRoomQuerySnapshot1 = await getDocs(existingRoomQuery1);
+      if (
+        existingRoomQuerySnapshot.docs.length > 0 ||
+        existingRoomQuerySnapshot1.docs.length > 0
+      ) {
+        return new OperationResult({
+          success: true,
+          data: existingRoomQuerySnapshot.docs[0].id,
+        });
+      }
+
       const newChatRoom = await addDoc(this.chatsColRef, {
         members: [to, from],
         membersName: [

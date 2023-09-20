@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import "../../styles/userList.scss";
 import { RootState, useAppDispatch } from "../../state/store";
 import { IUserData } from "../../types";
 import { createRoom } from "../../state/slices/chatSlice";
@@ -12,10 +11,14 @@ const UserList: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.authSlice);
   const { userList } = useSelector((state: RootState) => state.userSlice);
   const dispatch = useAppDispatch();
-  const activeUser = user.uid;
+  const activeUser = user?.uid;
 
   const createOneRoom = (to: string) => {
+    if (!user) {
+      return;
+    }
     const values = { to, from: user.uid };
+
     dispatch(createRoom(values));
   };
   useEffect(() => {
@@ -30,33 +33,18 @@ const UserList: React.FC = () => {
     };
   }, [isOnline]);
 
-  const onlineStyle = {
-    display: "inline-block",
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "green",
-  };
-  const offlineStyle = {
-    display: "inline-block",
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "red",
-  };
-
   return (
     <div className="userList">
       <div className="activeUserCheckBoxContainer">
         <div>
-          <span className="switch">
+          <label className="switch">
             <input
               onChange={() => setIsOnline(!isOnline)}
               type="checkbox"
               id="switch-round"
             />
             <label htmlFor="switch-round"></label>
-          </span>
+          </label>
         </div>
       </div>
 
@@ -73,17 +61,10 @@ const UserList: React.FC = () => {
                   />
 
                   <p style={{ color: "green" }}>
-                    {" "}
-                    {value.firstName.toLocaleUpperCase()}{" "}
-                    {value.lastName.toLocaleUpperCase()}
+                    {value.firstName?.toLocaleUpperCase()}{" "}
+                    {value.lastName?.toLocaleUpperCase()}
                   </p>
-                  <span>
-                    {value.online ? (
-                      <span style={onlineStyle}></span>
-                    ) : (
-                      <span style={offlineStyle}></span>
-                    )}
-                  </span>
+                  <span>{value.online ? <span></span> : <span></span>}</span>
                 </div>
               </li>
             ) : (
@@ -99,16 +80,10 @@ const UserList: React.FC = () => {
                   />
 
                   <p>
-                    {value.firstName.toLocaleUpperCase()}{" "}
-                    {value.lastName.toLocaleUpperCase()}
+                    {value.firstName?.toLocaleUpperCase()}{" "}
+                    {value.lastName?.toLocaleUpperCase()}
                   </p>
-                  <span>
-                    {value.online ? (
-                      <span style={onlineStyle}></span>
-                    ) : (
-                      <span style={offlineStyle}></span>
-                    )}
-                  </span>
+                  <span>{value.online ? <span></span> : <span></span>}</span>
                 </div>
               </div>
             )}

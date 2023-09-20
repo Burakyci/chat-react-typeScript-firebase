@@ -26,6 +26,7 @@ export const appLogin = createAsyncThunk(
     const activeUserId = fireAuth.currentUser?.uid;
     if (!activeUserId) return;
     await userService.isItOnline(activeUserId, true);
+    return loginResult.data;
   }
 );
 export const appSignup = createAsyncThunk(
@@ -52,6 +53,7 @@ export const appSignup = createAsyncThunk(
     if (!res.success) {
       thunkApi.rejectWithValue(res.message);
     }
+    return signupResult.data;
   }
 );
 export const appLogout = createAsyncThunk(
@@ -64,6 +66,7 @@ export const appLogout = createAsyncThunk(
     if (!res.success) {
       rejectWithValue(res.message);
     }
+    return null;
   }
 );
 

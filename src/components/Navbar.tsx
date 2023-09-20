@@ -1,11 +1,10 @@
 import React from "react";
-import "../styles/navbar.scss";
 import { useAppDispatch } from "../state/store";
 import { appLogout } from "../state/slices/authSlice";
 import { useNavigate, NavLink, Outlet } from "react-router-dom";
 import Search from "./Search";
 const Navbar: React.FC = () => {
-  const navi = useNavigate();
+  const navigation = useNavigate();
   const dispatch = useAppDispatch();
   const logout = async () => {
     await dispatch(appLogout());
@@ -24,7 +23,7 @@ const Navbar: React.FC = () => {
         <button
           className="link"
           onClick={() => {
-            navi(-1);
+            navigation(-1);
           }}
         >
           Back
@@ -32,7 +31,7 @@ const Navbar: React.FC = () => {
         <button
           onClick={async () => {
             logout();
-            await navi(`myProfile`);
+            await navigation(`myProfile`);
           }}
         >
           Logout

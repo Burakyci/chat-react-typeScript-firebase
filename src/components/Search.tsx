@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/search.scss";
 import userService from "../services/userService";
 import { useNavigate } from "react-router-dom";
 import { IUserData } from "../types";
@@ -15,9 +14,6 @@ const Search: React.FC = () => {
       setUsers(user.data);
     })();
   }, [search]);
-  useEffect(() => {
-    console.log(users);
-  }, [users]);
 
   return (
     <div className="search-container">

@@ -2,14 +2,13 @@ import React, { ChangeEvent, useState } from "react";
 import userService from "../services/userService";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
-import "../styles/upload.scss";
 
 const Upload: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.authSlice);
   const [imageUpload, setImageUpload] = useState<File | null>(null);
 
   const uploadImage = async () => {
-    if (imageUpload) {
+    if (imageUpload && user) {
       const urlRef = await userService.uploadProfilePhoto(
         imageUpload,
         user.uid

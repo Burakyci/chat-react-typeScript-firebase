@@ -1,6 +1,4 @@
 import React from "react";
-import Upload from "../components/Upload";
-import "../styles/profile.scss";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../state/store";
@@ -46,7 +44,7 @@ const Profile: React.FC = () => {
             <div className="profile-card__content__item">
               <span className="profile-card__content__item__label">Email:</span>
               <span className="profile-card__content__item__value">
-                {user.email}
+                {user?.email}
               </span>
             </div>
             <div className="profile-card__content__item">
